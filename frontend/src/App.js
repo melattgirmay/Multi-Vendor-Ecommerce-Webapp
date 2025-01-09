@@ -6,7 +6,7 @@ import ProductsListPage from './pages/ProductsListPage';
 import EventsPage from './pages/EventsPage';
 import FAQPage from './pages/FAQPage';
 import BecomeSellerPage from './pages/BecomeSellerPage';
-import VendorDashboard from './pages/VendorDashboard';
+import LoginPage from './pages/LoginPage';
 
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
       <Route path="/events" element={<EventsPage />} />
       <Route path="/faq" element={<FAQPage />} />
       <Route path="/become-seller" element={<BecomeSellerPage />} />
-      <Route path="/seller-dashboard" element={<VendorDashboard />} />
+      <Route path="/login" element={<LoginPage />} />
       {/* Add more routes as needed */}
     </Routes>
   );
