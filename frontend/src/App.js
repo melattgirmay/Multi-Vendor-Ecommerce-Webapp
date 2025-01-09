@@ -1,13 +1,24 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
+import BestSellingPage from './pages/BestSellingPage';
 import ProductsListPage from './pages/ProductsListPage';
+import EventsPage from './pages/EventsPage';
+import FAQPage from './pages/FAQPage';
+import BecomeSellerPage from './pages/BecomeSellerPage';
+import VendorDashboard from './pages/VendorDashboard';
 
 function App() {
   return (
     <Routes>
+      /events
       <Route path="/" element={<HomePage />} />
+      <Route path="/bestselling" element={<BestSellingPage />} />
       <Route path="/products" element={<ProductsListPage />} />
+      <Route path="/events" element={<EventsPage />} />
+      <Route path="/faq" element={<FAQPage />} />
+      <Route path="/become-seller" element={<BecomeSellerPage />} />
+      <Route path="/seller-dashboard" element={<VendorDashboard />} />
       {/* Add more routes as needed */}
     </Routes>
   );
