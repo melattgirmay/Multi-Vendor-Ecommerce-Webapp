@@ -1,23 +1,28 @@
-// Add this at the top of your db.js file
+// C:\Users\hp\Desktop\Multi-Vendor-Ecommerce-Webapp\backend\server.js
 const express = require("express");
 const cors = require("cors");
-const connectDB = require("./config/db"); // Import the connectDB function
+const dotenv = require("dotenv");
+const connectDB = require("./config/db");
 const VendorsRoutes = require("./api/Vendors");
+
+dotenv.config(); // To load environment variables from .env
 
 const app = express();
 
 // Connect to MongoDB
 connectDB();
 
-// Enable CORS
-app.use(cors());
+// Enable CORS to allow cross-origin requests (from the frontend)
+app.use(cors({ origin: "http://localhost:3000" }))
 
-// Parse incoming JSON data
+// Middleware to parse incoming JSON data
 app.use(express.json());
 
 // Use Vendor routes
 app.use("/api/Vendors", VendorsRoutes);
 
-app.listen(5000, () => {
-  console.log("Server is running on http://localhost:5000");
+// Set the server to listen on port 5000
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });

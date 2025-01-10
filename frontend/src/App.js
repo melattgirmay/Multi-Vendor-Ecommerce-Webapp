@@ -7,6 +7,8 @@ import EventsPage from './pages/EventsPage';
 import FAQPage from './pages/FAQPage';
 import BecomeVendorPage from './pages/BecomeVendorPage';
 import LoginPage from './pages/LoginPage';
+import VendorLoginPage from "./pages/VendorLoginPage";
+import VendorDashboard from "./pages/VendorDashboard";
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
       <Route path="/faq" element={<FAQPage />} />
       <Route path="/become-Vendor" element={<BecomeVendorPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/vendor-login" element={<VendorLoginPage />} />
+      <Route path="/vendor-dashboard" element={<VendorDashboard />} />
       {/* Add more routes as needed */}
     </Routes>
   );

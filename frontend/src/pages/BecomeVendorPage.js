@@ -148,6 +148,16 @@ const BecomeVendorPage = () => {
           >
             Register
           </button>
+          
+          {/* Link to Vendor Login page */}
+          <div className="mt-4 text-center">
+            <p>
+              Already have an account?{" "}
+              <Link to="/vendor-login" className="text-teal-600 font-semibold">
+                Login here
+              </Link>
+            </p>
+          </div>
         </form>
       </main>
 
