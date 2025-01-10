@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { registerSeller } from "../api/sellers"; // Import API function
+import { registerVendor } from "../api/Vendors"; // Import API function
 import { Link } from "react-router-dom";
 import Footer from "../components/Footer";
 
-const BecomeSellerPage = () => {
+const BecomeVendorPage = () => {
   const [formData, setFormData] = useState({
     shopName: "",
     email: "",
@@ -36,7 +36,7 @@ const BecomeSellerPage = () => {
     setError("");
 
     try {
-      await registerSeller(formData); // API call to register seller
+      await registerVendor(formData); // API call to register Vendor
       setSuccess(true);
       setFormData({
         shopName: "",
@@ -61,7 +61,7 @@ const BecomeSellerPage = () => {
             className="h-15 w-14 mr-3"
           />
         </Link>
-        <h1 className="text-5xl font-bold text-teal-600 mb-8">Become a Seller</h1>
+        <h1 className="text-5xl font-bold text-teal-600 mb-8">Become a Vendor</h1>
         <Link
           to="/"
           className="px-6 py-2 bg-teal-600 text-white font-semibold rounded-md shadow-md hover:bg-teal-700"
@@ -157,4 +157,4 @@ const BecomeSellerPage = () => {
   );
 };
 
-export default BecomeSellerPage;
+export default BecomeVendorPage;

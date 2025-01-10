@@ -5,7 +5,7 @@ import BestSellingPage from './pages/BestSellingPage';
 import ProductsListPage from './pages/ProductsListPage';
 import EventsPage from './pages/EventsPage';
 import FAQPage from './pages/FAQPage';
-import BecomeSellerPage from './pages/BecomeSellerPage';
+import BecomeVendorPage from './pages/BecomeVendorPage';
 import LoginPage from './pages/LoginPage';
 
 function App() {
@@ -17,7 +17,7 @@ function App() {
       <Route path="/products" element={<ProductsListPage />} />
       <Route path="/events" element={<EventsPage />} />
       <Route path="/faq" element={<FAQPage />} />
-      <Route path="/become-seller" element={<BecomeSellerPage />} />
+      <Route path="/become-Vendor" element={<BecomeVendorPage />} />
       <Route path="/login" element={<LoginPage />} />
       {/* Add more routes as needed */}
     </Routes>

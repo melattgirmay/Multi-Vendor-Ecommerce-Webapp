@@ -63,8 +63,8 @@ const Header = () => {
           />
           <AiOutlineSearch size={24} className="absolute right-3 top-3 cursor-pointer" />
         </div>
-        <Link to="/become-seller" className="bg-black text-white px-4 py-2 rounded-lg">
-          Become Seller <IoIosArrowForward className="inline-block ml-1" />
+        <Link to="/become-Vendor" className="bg-black text-white px-4 py-2 rounded-lg">
+          Become Vendor <IoIosArrowForward className="inline-block ml-1" />
         </Link>
       </div>
 

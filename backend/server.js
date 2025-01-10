@@ -1,17 +1,23 @@
+// Add this at the top of your db.js file
 const express = require("express");
 const cors = require("cors");
+const connectDB = require("./config/db"); // Import the connectDB function
+const VendorsRoutes = require("./api/Vendors");
+
 const app = express();
 
-// Import the seller routes
-const sellersRoutes = require("./api/sellers");
+// Connect to MongoDB
+connectDB();
 
-app.use(cors()); // Enable CORS to allow frontend requests
-app.use(express.json()); // Parse incoming JSON data
+// Enable CORS
+app.use(cors());
 
-// Use the sellers routes for any paths starting with /api/sellers
-app.use("/api/sellers", sellersRoutes);
+// Parse incoming JSON data
+app.use(express.json());
 
-// Start the server
+// Use Vendor routes
+app.use("/api/Vendors", VendorsRoutes);
+
 app.listen(5000, () => {
   console.log("Server is running on http://localhost:5000");
 });
