@@ -74,7 +74,7 @@ router.post("/login", async (req, res) => {
 });
 
 // Vendor dashboard route
-const authMiddleware = require("../middleware/auth");
+const authMiddleware = require("../middlewares/auth");
 
 router.get("/dashboard", authMiddleware, async (req, res) => {
   try {
