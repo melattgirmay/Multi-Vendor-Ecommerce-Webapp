@@ -1,33 +1,45 @@
+//C:\Users\hp\Desktop\Multi-Vendor-Ecommerce-Webapp\backend\controllers\VendorController.js
 const Vendor = require('../models/Vendor');
 const bcrypt = require('bcryptjs');
-const registerVendor = async (req, res) => {
-    const { shopName, email, password } = req.body;
+const jwt = require('jsonwebtoken');
+
+// Vendor Login Controller
+const vendorLogin = async (req, res) => {
+    const { email, password } = req.body;
 
     try {
-        // Check if email already exists
-        const existingVendor = await Vendor.findOne({ email });
-        if (existingVendor) {
-            return res.status(400).json({ message: 'Email already exists' });
+        // Validate input
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Email and password are required' });
         }
 
-        // Hash the password
-        const hashedPassword = await bcrypt.hash(password, 10);
+        // Check if vendor exists
+        const vendor = await Vendor.findOne({ email: email.toLowerCase() });
+        if (!vendor) {
+            console.log('Vendor not found for email:', email);
+            return res.status(400).json({ message: 'Invalid email or password' });
+        }
 
-        // Create a new Vendor
-        const newVendor = new Vendor({
-            shopName,
-            email,
-            password: hashedPassword,
+        // Compare password
+        const isMatch = await bcrypt.compare(password, vendor.password);
+        if (!isMatch) {
+            console.log('Password mismatch for email:', email);
+            return res.status(400).json({ message: 'Invalid email or password' });
+        }
+
+        // Generate a token
+        const token = jwt.sign({ id: vendor._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+
+        // Respond with success
+        res.status(200).json({
+            message: 'Login successful',
+            token,
+            vendor: { id: vendor._id, email: vendor.email },
         });
-
-        // Save the Vendor to the database
-        const savedVendor = await newVendor.save();
-
-        res.status(201).json({ message: 'Vendor registered successfully', Vendor: savedVendor });
     } catch (error) {
-        console.error('Error registering Vendor:', error);
+        console.error('Error during login:', error.message);
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
 
-module.exports = { registerVendor };
+module.exports = { vendorLogin };

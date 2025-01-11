@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { registerVendor } from "../api/Vendors"; // Import API function
-import { Link } from "react-router-dom";
-import Footer from "../components/Footer";
+import { registerVendor } from "../api/vendors"; // Ensure path is correct
+import { Link, useNavigate } from "react-router-dom";
 
 const BecomeVendorPage = () => {
   const [formData, setFormData] = useState({
@@ -11,7 +10,7 @@ const BecomeVendorPage = () => {
     confirmPassword: "",
   });
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,8 +20,12 @@ const BecomeVendorPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic validations
-    if (!formData.shopName || !formData.email || !formData.password || !formData.confirmPassword) {
+    if (
+      !formData.shopName ||
+      !formData.email ||
+      !formData.password ||
+      !formData.confirmPassword
+    ) {
       setError("All fields are required!");
       return;
     }
@@ -32,36 +35,29 @@ const BecomeVendorPage = () => {
       return;
     }
 
-    // Clear errors if all validations pass
-    setError("");
-
     try {
-      await registerVendor(formData); // API call to register Vendor
-      setSuccess(true);
-      setFormData({
-        shopName: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-      });
+      const response = await registerVendor(formData);
+      console.log("Vendor registered:", response.vendor);
+      alert(response.message); // Show success message
+      navigate("/vendor-login"); // Redirect to login page
     } catch (err) {
-      const errorMessage = err.response?.data?.message || "Something went wrong!";
-      setError(errorMessage);
+      console.error("Error during registration:", err);
+      setError(err.message || "Failed to register");
     }
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-200">
+    <div className="flex flex-col items-center justify-center bg-gray-100">
       {/* Header */}
-      <div className="flex items-center justify-between bg-white shadow-md py-3 px-20">
-        <Link to="/" className="flex items-center justify-between">
+      <div className="flex items-center justify-between bg-white shadow-md py-5 px-8 w-full">
+        <Link to="/" className="flex items-center">
           <img
             src="/assets/icons/EcomIcon.svg"
             alt="E-commerce Logo"
-            className="h-15 w-14 mr-3"
+            className="h-20 w-20 mr-3"
           />
         </Link>
-        <h1 className="text-5xl font-bold text-teal-600 mb-8">Become a Vendor</h1>
+        <h1 className="text-5xl font-bold text-teal-600">Become a Vendor</h1>
         <Link
           to="/"
           className="px-6 py-2 bg-teal-600 text-white font-semibold rounded-md shadow-md hover:bg-teal-700"
@@ -70,99 +66,59 @@ const BecomeVendorPage = () => {
         </Link>
       </div>
 
-      {/* Main Form Section */}
-      <main className="flex-grow flex items-center justify-center p-2">
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg"
-        >
-          {error && <p className="text-red-600 text-center mb-4">{error}</p>}
-          {success && (
-            <p className="text-green-600 text-center mb-4">
-              Registration successful! You can now log in.
-            </p>
-          )}
-          <div className="mb-6">
-            <label htmlFor="shopName" className="block text-gray-700 font-medium mb-2">
-              Shop Name
-            </label>
-            <input
-              type="text"
-              id="shopName"
-              name="shopName"
-              value={formData.shopName}
-              onChange={handleChange}
-              required
-              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
-              placeholder="Enter your shop name"
-            />
-          </div>
-          <div className="mb-6">
-            <label htmlFor="email" className="block text-gray-700 font-medium mb-2">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
-              placeholder="Enter your email"
-            />
-          </div>
-          <div className="mb-6">
-            <label htmlFor="password" className="block text-gray-700 font-medium mb-2">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
-              placeholder="Create a password"
-            />
-          </div>
-          <div className="mb-6">
-            <label htmlFor="confirmPassword" className="block text-gray-700 font-medium mb-2">
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              required
-              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
-              placeholder="Confirm your password"
-            />
-          </div>
+      {/* Vendor Registration Form */}
+      <div className="bg-white p-10 rounded-lg shadow-lg w-11/12 max-w-lg mt-5">
+        <h1 className="text-3xl font-bold text-center text-teal-600 mb-6">
+          Signup
+        </h1>
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="text"
+            name="shopName"
+            placeholder="Shop Name"
+            value={formData.shopName}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+          />
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirm Password"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+          />
           <button
             type="submit"
-            className="w-full py-3 bg-teal-600 text-white font-bold rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className="w-full bg-teal-600 text-white font-bold py-2 rounded-lg hover:bg-teal-700"
           >
             Register
           </button>
-          
-          {/* Link to Vendor Login page */}
-          <div className="mt-4 text-center">
-            <p>
-              Already have an account?{" "}
-              <Link to="/vendor-login" className="text-teal-600 font-semibold">
-                Login here
-              </Link>
-            </p>
-          </div>
         </form>
-      </main>
-
-      {/* Footer */}
-      <Footer />
+        <p className="text-center mt-4">
+          Already have an account?{" "}
+          <Link to="/vendor-login" className="text-teal-600 hover:underline">
+            Login Here
+          </Link>
+        </p>
+      </div>
     </div>
   );
 };

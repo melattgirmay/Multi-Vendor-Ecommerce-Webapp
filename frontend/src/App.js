@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import HomePage from './pages/HomePage';
 import BestSellingPage from './pages/BestSellingPage';
 import ProductsListPage from './pages/ProductsListPage';
@@ -9,6 +9,7 @@ import BecomeVendorPage from './pages/BecomeVendorPage';
 import LoginPage from './pages/LoginPage';
 import VendorLoginPage from "./pages/VendorLoginPage";
 import VendorDashboard from "./pages/VendorDashboard";
+import ProtectedRoute from './router/ProtectedRoute';
 
 function App() {
   return (
@@ -22,7 +23,14 @@ function App() {
       <Route path="/become-Vendor" element={<BecomeVendorPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/vendor-login" element={<VendorLoginPage />} />
-      <Route path="/vendor-dashboard" element={<VendorDashboard />} />
+      <Route
+          path="/vendor-dashboard"
+          element={
+            <ProtectedRoute>
+              <VendorDashboard />
+            </ProtectedRoute>
+          }
+        />
       {/* Add more routes as needed */}
     </Routes>
   );
