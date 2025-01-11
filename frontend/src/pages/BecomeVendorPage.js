@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { registerVendor } from "../api/vendors"; // Ensure path is correct
+import { registerVendor } from "../api/Vendors"; // Ensure path is correct
 import { Link, useNavigate } from "react-router-dom";
 
 const BecomeVendorPage = () => {
