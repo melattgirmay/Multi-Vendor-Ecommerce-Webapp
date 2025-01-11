@@ -1,25 +1,32 @@
-import React from 'react';
+// src/components/FilterBar.js
+import React, { useState } from 'react';
 
-const FilterBar = ({ categories, selectedCategory, onSelectCategory }) => {
+const FilterBar = ({ setFilters }) => {
+  const [category, setCategory] = useState('');
+  const [priceRange, setPriceRange] = useState('');
+
+  const handleFilterChange = () => {
+    setFilters({
+      category,
+      priceRange,
+    });
+  };
+
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
-      {categories.map((category) => (
-        <button
-          key={category}
-          onClick={() => onSelectCategory(category)}
-          style={{
-            backgroundColor: category === selectedCategory ? '#008080' : '#fff',
-            color: category === selectedCategory ? '#fff' : '#008080',
-            border: '1px solid #008080',
-            padding: '10px 15px',
-            margin: '0 5px',
-            borderRadius: '5px',
-            cursor: 'pointer',
-          }}
-        >
-          {category}
-        </button>
-      ))}
+    <div className="filter-bar">
+      <select value={category} onChange={(e) => setCategory(e.target.value)}>
+        <option value="">All Categories</option>
+        <option value="electronics">Electronics</option>
+        <option value="clothing">Clothing</option>
+        <option value="furniture">Furniture</option>
+      </select>
+      <input
+        type="text"
+        value={priceRange}
+        onChange={(e) => setPriceRange(e.target.value)}
+        placeholder="Price Range"
+      />
+      <button onClick={handleFilterChange}>Apply Filters</button>
     </div>
   );
 };
