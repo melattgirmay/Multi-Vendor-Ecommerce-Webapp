@@ -1,5 +1,6 @@
+//C:\Users\hp\Desktop\Multi-Vendor-Ecommerce-Webapp\frontend\src\pages\VendorLoginPage.js
 import React, { useState } from "react";
-import { vendorLogin } from "../api/vendors"; // Ensure path is correct
+import { vendorLogin } from "../api/Vendors"; // Ensure path is correct
 import { Link, useNavigate } from "react-router-dom";
 
 
@@ -31,9 +32,25 @@ const VendorLoginPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-11/12 max-w-md">
-        <h1 className="text-2xl font-bold text-center mb-6">Vendor Login</h1>
+    <div className="flex flex-col items-center justify-center bg-gray-100 gap-6">
+      {/* Header */}
+      <div className="flex items-center justify-between bg-white shadow-md py-5 px-8 w-full">
+        <Link to="/" className="flex items-center">
+          <img
+            src="/assets/icons/EcomIcon.svg"
+            alt="E-commerce Logo"
+            className="h-20 w-20 mr-3"
+          />
+        </Link>
+        <h1 className="text-5xl font-bold text-teal-600">Vendor Login</h1>
+        <Link
+          to="/"
+          className="px-6 py-2 bg-teal-600 text-white font-semibold rounded-md shadow-md hover:bg-teal-700"
+        >
+          Shop
+        </Link>
+      </div>
+      <div className="bg-white p-8 rounded-lg shadow-lg w-11/12 max-w-md mt-5 mb-16">
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
