@@ -10,6 +10,7 @@ import LoginPage from './pages/LoginPage';
 import VendorLoginPage from "./pages/VendorLoginPage";
 import VendorDashboard from "./pages/VendorDashboard";
 import ProtectedRoute from './router/ProtectedRoute';
+import AddProduct from "./components/AddProduct";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/add-product" element={<AddProduct />} />
       {/* Add more routes as needed */}
     </Routes>
   );
