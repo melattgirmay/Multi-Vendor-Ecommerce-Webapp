@@ -1,57 +1,72 @@
-// routes/product.js
 const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const Product = require('../models/product'); // Import product model
+const Product = require('../models/product'); // Import the Product model
 
 const router = express.Router();
 
-// Set up multer for image uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, './uploads/');  // Folder where images will be stored
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Save file with timestamp to avoid naming conflicts
-  },
+// Add a product
+router.post('/add', async (req, res) => {
+    const { name, description, category, price, stockQuantity } = req.body;
+    try {
+        const newProduct = new Product({ name, description, category, price, stockQuantity });
+        const savedProduct = await newProduct.save();
+        res.status(201).json({ message: 'Product added successfully', product: savedProduct });
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to add product', error });
+    }
 });
 
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // Limit file size to 10MB
-  fileFilter: (req, file, cb) => {
-    const filetypes = /jpeg|jpg|png/;  // Allowed file types
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = filetypes.test(file.mimetype);
-    if (mimetype && extname) {
-      return cb(null, true);
-    } else {
-      cb('Error: Images only!');
+// Get all products
+router.get('/', async (req, res) => {
+    try {
+        const products = await Product.find();
+        res.status(200).json(products);
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to fetch products', error });
     }
-  },
-}).single('image'); // 'image' will be the key for the file field in the form
+});
 
-// Route to add product
-router.post('/add', upload, (req, res) => {
-  const { name, description, category, price, stockQuantity } = req.body;
-  const imageUrl = req.file ? `/uploads/${req.file.filename}` : ''; // Store image URL in the db
+// Get a product by ID
+router.get('/:id', async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        res.status(200).json(product);
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to fetch product', error });
+    }
+});
 
-  const newProduct = new Product({
-    name,
-    description,
-    category,
-    price,
-    stockQuantity,
-    imageUrl,
-  });
+// Update a product
+router.put('/:id', async (req, res) => {
+    const { name, description, category, price, stockQuantity } = req.body;
+    try {
+        const updatedProduct = await Product.findByIdAndUpdate(
+            req.params.id,
+            { name, description, category, price, stockQuantity },
+            { new: true } // Return the updated product
+        );
+        if (!updatedProduct) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        res.status(200).json({ message: 'Product updated successfully', product: updatedProduct });
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to update product', error });
+    }
+});
 
-  newProduct.save()
-    .then((product) => {
-      res.status(201).json({ message: 'Product added successfully', product });
-    })
-    .catch((err) => {
-      res.status(500).json({ message: 'Failed to add product', error: err });
-    });
+// Delete a product
+router.delete('/:id', async (req, res) => {
+    try {
+        const deletedProduct = await Product.findByIdAndDelete(req.params.id);
+        if (!deletedProduct) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        res.status(200).json({ message: 'Product deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to delete product', error });
+    }
 });
 
 module.exports = router;
