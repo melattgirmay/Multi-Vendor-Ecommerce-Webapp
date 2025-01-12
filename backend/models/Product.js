@@ -1,4 +1,3 @@
-//C:\Users\hp\Desktop\Multi-Vendor-Ecommerce-Webapp\backend\models\Product.js
 const mongoose = require("mongoose");
 
 // Define the schema for the Product model
@@ -26,6 +25,11 @@ const productSchema = new mongoose.Schema({
   imageUrl: {
     type: String, // Store the image URL
     default: "",
+  },
+  vendor: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Vendor', // Reference to the Vendor model
+    required: true,
   },
 }, {
   timestamps: true, // Automatically add createdAt and updatedAt fields

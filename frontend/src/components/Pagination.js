@@ -1,59 +1,31 @@
-// src/pages/ProductListPage.js
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import ProductCard from '../components/ProductCard';
-import Pagination from '../components/Pagination';
-import FilterBar from '../components/FilterBar';
-import Header from "../components/Header/Header";
-import Footer from '../components/Footer';
+import React from "react";
 
-const ProductListPage = () => {
-  const [products, setProducts] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [filters, setFilters] = useState({});
-
-  // Fetch products from API
-  const fetchProducts = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/products', {
-        params: {
-          page: currentPage,
-          limit: 10,
-          ...filters, // Apply filters if any
-        },
-      });
-      setProducts(response.data.products);
-      setTotalPages(response.data.totalPages);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    }
-  };
-
-  // Fetch products when page or filters change
-  useEffect(() => {
-    fetchProducts();
-  }, [currentPage, filters]);
+const Pagination = ({ itemsPerPage, totalItems, currentPage, paginate }) => {
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(totalItems / itemsPerPage); i++) {
+    pageNumbers.push(i);
+  }
 
   return (
-    <div>
-      <Header />
-      <div className="product-list-container">
-        <FilterBar setFilters={setFilters} />
-        <div className="product-list">
-          {products.map((product) => (
-            <ProductCard key={product._id} product={product} />
-          ))}
-        </div>
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          setCurrentPage={setCurrentPage}
-        />
-      </div>
-      <Footer />
-    </div>
+    <nav className="mt-6 flex justify-center">
+      <ul className="flex gap-2">
+        {pageNumbers.map((number) => (
+          <li key={number}>
+            <button
+              onClick={() => paginate(number)}
+              className={`px-4 py-2 rounded-md ${
+                number === currentPage
+                  ? "bg-teal-600 text-white"
+                  : "bg-gray-200"
+              }`}
+            >
+              {number}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </nav>
   );
 };
 
-export default ProductListPage;
+export default Pagination;

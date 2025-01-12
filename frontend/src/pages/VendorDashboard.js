@@ -1,14 +1,15 @@
-//C:\Users\hp\Desktop\Multi-Vendor-Ecommerce-Webapp\frontend\src\pages\VendorDashboard.js
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import AddProduct from "../components/AddProduct"; // Import AddProduct component
+import AddProduct from "../components/AddProduct"; 
 import axios from "axios";
 
 const VendorDashboard = () => {
   const [vendorData, setVendorData] = useState(null);
-  const [products, setProducts] = useState([]); // Initially empty, will be populated later
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showAddProduct, setShowAddProduct] = useState(false); // Toggle AddProduct form
+  const [showAddProduct, setShowAddProduct] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -16,17 +17,26 @@ const VendorDashboard = () => {
         const token = localStorage.getItem("vendorToken");
         if (!token) {
           console.error("No token found in localStorage");
+          return;
         }
 
+        // Fetch vendor's data
         const vendorResponse = await axios.get(
-          "http://localhost:5000/api/Vendors/dashboard",
+          "http://localhost:5000/api/vendors/dashboard",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
         setVendorData(vendorResponse.data);
 
-        // Removed productsResponse request for now
+        // Fetch vendor's products
+        const productsResponse = await axios.get(
+          "http://localhost:5000/api/products/vendor", 
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setProducts(productsResponse.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -38,18 +48,15 @@ const VendorDashboard = () => {
   }, []);
 
   const handleProductAdded = (newProduct) => {
-    setProducts([...products, newProduct]); // Update the product list
-    setShowAddProduct(false); // Hide the AddProduct form
+    setProducts([...products, newProduct]);
+    setShowAddProduct(false); 
   };
-
-  const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem("vendorToken");
     navigate("/vendor-login");
   };
 
-  // Close the AddProduct form
   const handleCloseModal = () => {
     setShowAddProduct(false);
   };
@@ -70,15 +77,15 @@ const VendorDashboard = () => {
         </button>
       </div>
 
-      {/* Conditionally render AddProduct component as a modal */}
+      {/* Add Product Modal */}
       {showAddProduct && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-          onClick={handleCloseModal} // Close modal when clicking outside
+          onClick={handleCloseModal} 
         >
           <div
             className="bg-white p-8 rounded-xl shadow-lg w-full max-w-lg transform transition-all duration-300 scale-95 hover:scale-100"
-            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the modal
+            onClick={(e) => e.stopPropagation()} 
           >
             <AddProduct onClose={handleCloseModal} onProductAdded={handleProductAdded} />
           </div>
@@ -87,11 +94,11 @@ const VendorDashboard = () => {
 
       {/* Promotional Banner */}
       <section
-          className="flex flex-col mt-4 mb-2 md:flex-row items-center justify-between p-8 gap-10 rounded-lg shadow-md"
-          style={{
-            background: "linear-gradient(to left, #99cdd8, #ffffff)",
-          }}
-        >
+        className="flex flex-col mt-4 mb-2 md:flex-row items-center justify-between p-8 gap-10 rounded-lg shadow-md"
+        style={{
+          background: "linear-gradient(to left, #99cdd8, #ffffff)",
+        }}
+      >
         <div className="max-w-6xl mx-auto text-center md:text-left px-8">
           <h2 className="text-4xl font-extrabold text-black mb-4">
             {vendorData?.shopName || "Your Shop Name"}
@@ -109,14 +116,13 @@ const VendorDashboard = () => {
 
       {/* Dashboard Main Content */}
       <main className="flex-grow px-8 mt-2">
-        {/* Info Cards */}
-        <div className=" bg-[#ffffff] text-white  rounded-lg grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+        <div className="bg-[#ffffff] text-white rounded-lg grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {[ 
             {
               title: "Products",
-              count: products.length, // Display current number of products
+              count: products.length, 
               action: "Add New Product",
-              onClick: () => setShowAddProduct(true), // Show AddProduct form
+              onClick: () => setShowAddProduct(true), 
             },
             { title: "Orders", count: 20, action: "View Orders" },
             { title: "Revenue", count: "$5000", action: "View Details" },

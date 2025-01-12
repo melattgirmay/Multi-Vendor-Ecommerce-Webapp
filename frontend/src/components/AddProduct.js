@@ -81,15 +81,26 @@ const AddProduct = ({ onClose, onProductAdded }) => {
         onChange={handleChange}
         className="mb-4 p-2 border rounded w-full"
       />
-      <input
-        type="text"
+      {/* Category Dropdown */}
+      <select
         name="category"
-        placeholder="Category"
         value={formData.category}
         onChange={handleChange}
         className="mb-4 p-2 border rounded w-full"
         required
-      />
+      >
+        <option value="">Select Category</option>
+        <option value="Fashion">Fashion</option>
+        <option value="Health & Wellness">Health & Wellness</option>
+        <option value="Home Appliances">Home Appliances</option>
+        <option value="Toys & Games">Toys & Games</option>
+        <option value="Furniture">Furniture</option>
+        <option value="Automotive">Automotive</option>
+        <option value="Books & Stationery">Books & Stationery</option>
+        <option value="Gourmet & Food">Gourmet & Food</option>
+        <option value="Tech & Gadgets">Tech & Gadgets</option>
+        <option value="Accessories">Accessories</option>
+            </select>
       <input
         type="file"
         name="image"

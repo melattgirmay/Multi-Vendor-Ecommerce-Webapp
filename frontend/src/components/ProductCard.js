@@ -1,34 +1,21 @@
-// src/components/FilterBar.js
-import React, { useState } from 'react';
+import React from "react";
 
-const FilterBar = ({ setFilters }) => {
-  const [category, setCategory] = useState('');
-  const [priceRange, setPriceRange] = useState('');
-
-  const handleFilterChange = () => {
-    setFilters({
-      category,
-      priceRange,
-    });
-  };
+const ProductCard = ({ product }) => {
+  const baseUrl = "http://localhost:5000"; // Backend base URL
+  console.log("Product Image URL:", product.imageUrl); // Debug log
 
   return (
-    <div className="filter-bar">
-      <select value={category} onChange={(e) => setCategory(e.target.value)}>
-        <option value="">All Categories</option>
-        <option value="electronics">Electronics</option>
-        <option value="clothing">Clothing</option>
-        <option value="furniture">Furniture</option>
-      </select>
-      <input
-        type="text"
-        value={priceRange}
-        onChange={(e) => setPriceRange(e.target.value)}
-        placeholder="Price Range"
+    <div className="border p-4 rounded-lg shadow-sm">
+      <img
+        src={product.imageUrl ? `${baseUrl}${product.imageUrl}` : "/placeholder.jpeg"}
+        alt={product.name}
+        className="w-40 h-40 object-cover mb-4"
       />
-      <button onClick={handleFilterChange}>Apply Filters</button>
+      <h2 className="text-lg font-bold">{product.name}</h2>
+      <p className="text-gray-600">{product.category}</p>
+      <p className="text-teal-600 font-bold">{product.price.toFixed(2)} Birr</p>
     </div>
   );
 };
 
-export default FilterBar;
+export default ProductCard;
