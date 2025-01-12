@@ -9,7 +9,7 @@ import BecomeVendorPage from './pages/BecomeVendorPage';
 import Register from "./pages/RegisterPage";
 import Login from "./pages/LoginPage";
 import Cart from "./pages/Cart";
-import Wishlist from "./pages/Wishlist";
+//import Wishlist from "./pages/Wishlist";
 import VendorLoginPage from "./pages/VendorLoginPage";
 import VendorDashboard from "./pages/VendorDashboard";
 import ProtectedRoute from './router/ProtectedRoute';
@@ -28,7 +28,7 @@ function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
       <Route path="/cart" element={<Cart />} />
-      <Route path="/wishlist" element={<Wishlist />} />
+      {/*<Route path="/wishlist" element={<Wishlist />} /> */}
       <Route path="/vendor-login" element={<VendorLoginPage />} />
       <Route
           path="/vendor-dashboard"

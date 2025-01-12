@@ -1,3 +1,4 @@
+//C:\Users\hp\Desktop\Multi-Vendor-Ecommerce-Webapp\frontend\src\components\Header\Header.js
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineHeart, AiOutlineSearch, AiOutlineShoppingCart } from "react-icons/ai";
@@ -6,14 +7,14 @@ import { BiMenuAltLeft } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
 import DropDown from "./DropDown";
 import Navbar from "./Navbar";
-import { getCart, getWishlist } from "../../api/userApi"; // Adjust the import path if necessary
+import { getCart} from "../../api/userApi"; // Adjust the import path if necessary
 
 const Header = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [dropDown, setDropDown] = useState(false);
   const [active, setActive] = useState(false);
   const [cartCount, setCartCount] = useState(0);
-  const [wishlistCount, setWishlistCount] = useState(0);
+  //const [wishlistCount, setWishlistCount] = useState(0);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
 
@@ -23,19 +24,20 @@ const Header = () => {
     const token = localStorage.getItem("token");
     if (token) {
       setIsAuthenticated(true);
-      const fetchCartAndWishlist = async () => {
+      const fetchCart = async () => {
         try {
-          const cart = await getCart(token);
-          const wishlist = await getWishlist(token);
-          setCartCount(cart?.length || 0);
-          setWishlistCount(wishlist?.length || 0);
+          const token = localStorage.getItem("token");
+          if (token) {
+            const cart = await getCart(token);  // Make sure getCart is using the correct URL
+            setCartCount(cart?.length || 0);
+          }
         } catch (error) {
-          console.error("Failed to fetch cart or wishlist", error);
+          console.error("Failed to fetch cart", error);
         }
       };
-      fetchCartAndWishlist();
+      fetchCart();
     }
-  }, []);
+  }, []);  
 
   const handleSignOut = () => {
     localStorage.removeItem("token");
@@ -122,7 +124,7 @@ const Header = () => {
 
           {/* Icon Group */}
           <div className="flex items-center space-x-5">
-            {/* Wishlist Icon with Count */}
+            {/* Wishlist Icon with Count 
             <div
               className="relative cursor-pointer"
               onClick={() => {
@@ -139,7 +141,7 @@ const Header = () => {
                   {wishlistCount}
                 </span>
               )}
-            </div>
+            </div>  */}
 
             {/* Cart Icon with Count */}
             <div

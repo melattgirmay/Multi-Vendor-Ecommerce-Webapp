@@ -59,7 +59,7 @@ const ProductListPage = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
-    <div className>
+    <div>
       <Headers />
       <FilterBar onFilter={handleFilter} /> {/* Filter options */}
       {error ? (
