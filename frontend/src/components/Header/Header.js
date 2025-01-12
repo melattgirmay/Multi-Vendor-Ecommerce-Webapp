@@ -1,22 +1,48 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
-import {
-  AiOutlineHeart,
-  AiOutlineSearch,
-  AiOutlineShoppingCart,
-} from "react-icons/ai";
+import React, { useEffect, useState, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AiOutlineHeart, AiOutlineSearch, AiOutlineShoppingCart } from "react-icons/ai";
 import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
 import { BiMenuAltLeft } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
 import DropDown from "./DropDown";
 import Navbar from "./Navbar";
+import { getCart, getWishlist } from "../../api/userApi"; // Adjust the import path if necessary
 
 const Header = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [dropDown, setDropDown] = useState(false);
   const [active, setActive] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
+  const [wishlistCount, setWishlistCount] = useState(0);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
 
   const dropdownRef = useRef(null); // Reference to dropdown
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsAuthenticated(true);
+      const fetchCartAndWishlist = async () => {
+        try {
+          const cart = await getCart(token);
+          const wishlist = await getWishlist(token);
+          setCartCount(cart?.length || 0);
+          setWishlistCount(wishlist?.length || 0);
+        } catch (error) {
+          console.error("Failed to fetch cart or wishlist", error);
+        }
+      };
+      fetchCartAndWishlist();
+    }
+  }, []);
+
+  const handleSignOut = () => {
+    localStorage.removeItem("token");
+    setIsAuthenticated(false);
+    navigate("/");
+  };
+
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
@@ -51,7 +77,7 @@ const Header = () => {
       {/* Top Header */}
       <div className="hidden md:flex items-center justify-between w-full px-10 bg-gray-100">
         <Link to="/">
-          <img src="/assets/icons/EcomIcon.svg" alt="Logooo" className="h-21" />
+          <img src="/assets/icons/EcomIcon.svg" alt="Logo" className="h-21" />
         </Link>
         <div className="relative w-1/2">
           <input
@@ -64,7 +90,13 @@ const Header = () => {
           <AiOutlineSearch size={24} className="absolute right-3 top-3 cursor-pointer" />
         </div>
         <Link to="/become-Vendor" className="bg-black text-white px-4 py-2 rounded-lg">
-          Become Vendor <IoIosArrowForward className="inline-block ml-1" />
+          {isAuthenticated ? (
+            <span onClick={handleSignOut}>Logout</span>
+          ) : (
+            <span>
+              Become Vendor <IoIosArrowForward className="inline-block ml-1" />
+            </span>
+          )}
         </Link>
       </div>
 
@@ -91,27 +123,51 @@ const Header = () => {
           {/* Icon Group */}
           <div className="flex items-center space-x-5">
             {/* Wishlist Icon with Count */}
-            <div className="relative cursor-pointer">
+            <div
+              className="relative cursor-pointer"
+              onClick={() => {
+                if (!isAuthenticated) {
+                  alert("Please sign in first to view wishlist.");
+                } else {
+                  navigate("/wishlist");
+                }
+              }}
+            >
               <AiOutlineHeart size={28} className="text-white" />
-              {3 > 0 && (
+              {wishlistCount > 0 && (
                 <span className="absolute top-0 right-0 bg-vibrantPink text-white text-xs font-bold px-1 rounded-full">
-                  3
+                  {wishlistCount}
                 </span>
               )}
             </div>
 
             {/* Cart Icon with Count */}
-            <div className="relative cursor-pointer">
+            <div
+              className="relative cursor-pointer"
+              onClick={() => {
+                if (!isAuthenticated) {
+                  alert("Please sign in first to view cart.");
+                } else {
+                  navigate("/cart");
+                }
+              }}
+            >
               <AiOutlineShoppingCart size={28} className="text-white" />
-              {5 > 0 && (
+              {cartCount > 0 && (
                 <span className="absolute top-0 right-0 bg-vibrantPink text-white text-xs font-bold px-1 rounded-full">
-                  5
+                  {cartCount}
                 </span>
               )}
             </div>
-            <Link to="/login">
+
+            {/* Profile Icon */}
+            {isAuthenticated ? (
               <CgProfile size={28} className="cursor-pointer text-white" />
-            </Link>
+            ) : (
+              <Link to="/login">
+                <CgProfile size={28} className="cursor-pointer text-white" />
+              </Link>
+            )}
           </div>
         </div>
       </div>

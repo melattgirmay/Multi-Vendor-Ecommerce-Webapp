@@ -6,6 +6,7 @@ const path = require("path");
 const connectDB = require("./config/db");
 const VendorRoutes = require("./routes/vendor");
 const productRoutes = require('./routes/products');
+const userRoutes = require("./routes/user");
 
 dotenv.config(); // Load environment variables
 
@@ -25,6 +26,8 @@ app.use("/api/vendors", VendorRoutes);
 
 // Use Product routes
 app.use("/api/products", productRoutes);
+
+app.use("/api/users", userRoutes);
 
 // Serve the /uploads folder as static
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
