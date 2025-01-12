@@ -1,3 +1,4 @@
+//C:\Users\hp\Desktop\Multi-Vendor-Ecommerce-Webapp\backend\server.js
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
@@ -11,14 +12,11 @@ dotenv.config(); // Load environment variables
 
 const app = express();
 
-// Enable CORS with detailed configuration
-app.use(cors());
-
-// Handle preflight requests
-app.options('*', cors());  // Enable preflight for all routes
-
 // Connect to MongoDB
 connectDB();
+
+// Enable CORS
+app.use(cors({ origin: "http://localhost:3000" }));
 
 // Middleware to parse incoming JSON data
 app.use(express.json());
@@ -29,8 +27,7 @@ app.use("/api/vendors", VendorRoutes);
 // Use Product routes
 app.use("/api/products", productRoutes);
 
-// User routes
-app.use("/api/users", userRoutes); 
+app.use("/api/users", userRoutes);
 
 // Serve the /uploads folder as static
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
