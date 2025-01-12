@@ -1,4 +1,3 @@
-//C:\Users\hp\Desktop\Multi-Vendor-Ecommerce-Webapp\frontend\src\api\Vendors.js
 import axios from 'axios';
 
 // Vendor Registration

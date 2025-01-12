@@ -1,35 +1,75 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
+const multer = require('multer');
+const path = require('path');
+const Vendor = require('../models/Vendor'); // Add this line to import the Vendor model
 const Product = require('../models/Product'); // Import the Product model
+
+
+console.log(Product);
 
 const router = express.Router();
 
-// Add a product
-router.post('/add', async (req, res) => {
-    const { name, description, category, price, stockQuantity } = req.body;
-    const token = req.headers.authorization?.split(' ')[1]; // Extract token from header
-    
-    try {
-        // Decode the token to get the vendorId
-        const decodedToken = jwt.verify(token, 'your_secret_key');
-        const vendorId = decodedToken.id;  // assuming vendor id is in the decoded token
-
-        // Create a new product with the vendor reference
-        const newProduct = new Product({
-            name,
-            description,
-            category,
-            price,
-            stockQuantity,
-            vendor: vendorId,  // Associate the product with the vendor
-        });
-
-        const savedProduct = await newProduct.save();
-        res.status(201).json({ message: 'Product added successfully', product: savedProduct });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Failed to add product', error });
-    }
+// Set up multer storage (store files in the 'uploads' folder)
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/'); // Folder to store uploaded files
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // Generate a unique filename
+  },
 });
+
+const upload = multer({ storage: storage });
+
+// Add product route with image upload handling
+router.post('/add', upload.single('image'), async (req, res) => {
+  console.log('Headers:', req.headers); // Log request headers
+  console.log('File:', req.file); // Log file
+  console.log('Body:', req.body); // Log form fields
+
+  const { name, description, category, price, stockQuantity } = req.body;
+  const token = req.headers.authorization?.split(' ')[1];
+  console.log('Authorization Token:', req.headers.authorization);
+  const imageUrl = req.file ? `http://localhost:5000/uploads/${req.file.filename}` : null;
+
+  if (!name || !description || !category || !price || !stockQuantity || !req.file) {
+    return res.status(400).json({ message: 'All fields, including image, are required.' });
+  }
+
+  try {
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    console.log('Decoded Token:', decodedToken);
+
+    // Correctly access the vendorId from the decoded token
+    const vendorId = decodedToken.vendorId;
+
+    const vendorExists = await Vendor.findById(vendorId);
+    if (!vendorExists) {
+      console.error('Vendor not found with ID:', vendorId);
+      return res.status(404).json({ message: 'Vendor not found.' });
+    }
+    console.log('Vendor exists:', vendorExists);
+
+    const newProduct = new Product({
+      name,
+      description,
+      category,
+      price,
+      stockQuantity,
+      imageUrl,
+      vendor: vendorId,
+    });
+
+    // Ensure that this part is inside the try block, to handle errors properly
+    const savedProduct = await newProduct.save();
+    res.status(201).json({ message: 'Product added successfully', product: savedProduct });
+  } catch (error) {
+    console.error("Error while saving product:", error); // Log the error
+    res.status(500).json({ message: 'Failed to add product', error });
+  }
+});
+
 
 // Get all products
 router.get('/', async (req, res) => {
@@ -84,5 +124,7 @@ router.delete('/:id', async (req, res) => {
         res.status(500).json({ message: 'Failed to delete product', error });
     }
 });
+
+// Other product routes like GET, PUT, DELETE remain the same...
 
 module.exports = router;

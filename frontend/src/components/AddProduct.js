@@ -23,7 +23,7 @@ const AddProduct = ({ onClose, onProductAdded }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("vendorToken");
-
+  
     // Create a FormData object to send the data including the image
     const form = new FormData();
     form.append("name", formData.name);
@@ -31,19 +31,15 @@ const AddProduct = ({ onClose, onProductAdded }) => {
     form.append("category", formData.category);
     form.append("price", formData.price);
     form.append("stockQuantity", formData.stockQuantity);
-    form.append("image", formData.image); // Append the file
-
+    form.append("image", formData.image); // Ensure image is sent with 'image' as the key
+  
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/products/add",
-        form,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data", // This tells the server we're sending a file
-          },
-        }
-      );
+      const response = await axios.post("http://localhost:5000/api/products/add", form, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });      
       alert("Product added successfully!");
       onProductAdded(response.data.product); // Update the product list
       onClose(); // Close the modal after adding the product
@@ -51,7 +47,7 @@ const AddProduct = ({ onClose, onProductAdded }) => {
       console.error("Error adding product:", error);
       alert("Failed to add product.");
     }
-  };
+  };  
 
   return (
     <form onSubmit={handleSubmit} className="p-6 bg-white rounded-lg shadow-md relative">
