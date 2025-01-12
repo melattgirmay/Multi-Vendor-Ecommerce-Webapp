@@ -2,6 +2,7 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const path = require("path");
 const connectDB = require("./config/db");
 const VendorRoutes = require("./routes/vendor");
 const productRoutes = require('./routes/products');
@@ -24,6 +25,9 @@ app.use("/api/vendors", VendorRoutes);
 
 // Use Product routes
 app.use("/api/products", productRoutes);
+
+// Serve the /uploads folder as static
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Start the server
 const PORT = process.env.PORT || 5000;
