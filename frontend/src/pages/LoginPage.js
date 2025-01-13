@@ -1,23 +1,8 @@
 import React, { useState } from "react";
-import { loginUser } from "../api/userApi";
 import { Link, useNavigate } from "react-router-dom"; // Import Link for navigation
 
 const Login = () => {
-  const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [message, setMessage] = useState("");
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await loginUser(credentials);
-      localStorage.setItem("token", response.token);
-      setMessage("Login successful!");
-      navigate("/"); // Redirect to HomePage
-    } catch (error) {
-      setMessage(error.data?.message || "Login failed due to a server error.");
-    }
-  };
 
   return (
     <div className=" bg-gray-100 flex flex-col">
@@ -42,23 +27,15 @@ const Login = () => {
       {/* Login Form */}
       <div className="flex flex-1 mb-10 items-center justify-center">
         <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form className="space-y-4">
             <input
               type="email"
               placeholder="Email"
-              value={credentials.email}
-              onChange={(e) =>
-                setCredentials({ ...credentials, email: e.target.value })
-              }
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
             />
             <input
               type="password"
               placeholder="Password"
-              value={credentials.password}
-              onChange={(e) =>
-                setCredentials({ ...credentials, password: e.target.value })
-              }
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
             />
             <button

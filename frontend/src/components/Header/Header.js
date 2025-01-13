@@ -6,42 +6,13 @@ import { BiMenuAltLeft } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
 import DropDown from "./DropDown";
 import Navbar from "./Navbar";
-import { getCart, getWishlist } from "../../api/userApi"; // Adjust the import path if necessary
 
 const Header = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [dropDown, setDropDown] = useState(false);
   const [active, setActive] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
-  const [wishlistCount, setWishlistCount] = useState(0);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const navigate = useNavigate();
 
   const dropdownRef = useRef(null); // Reference to dropdown
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsAuthenticated(true);
-      const fetchCartAndWishlist = async () => {
-        try {
-          const cart = await getCart(token);
-          const wishlist = await getWishlist(token);
-          setCartCount(cart?.length || 0);
-          setWishlistCount(wishlist?.length || 0);
-        } catch (error) {
-          console.error("Failed to fetch cart or wishlist", error);
-        }
-      };
-      fetchCartAndWishlist();
-    }
-  }, []);
-
-  const handleSignOut = () => {
-    localStorage.removeItem("token");
-    setIsAuthenticated(false);
-    navigate("/");
-  };
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -90,13 +61,9 @@ const Header = () => {
           <AiOutlineSearch size={24} className="absolute right-3 top-3 cursor-pointer" />
         </div>
         <Link to="/become-Vendor" className="bg-black text-white px-4 py-2 rounded-lg">
-          {isAuthenticated ? (
-            <span onClick={handleSignOut}>Logout</span>
-          ) : (
-            <span>
-              Become Vendor <IoIosArrowForward className="inline-block ml-1" />
-            </span>
-          )}
+          <span>
+            Become Vendor <IoIosArrowForward className="inline-block ml-1" />
+          </span>
         </Link>
       </div>
 
@@ -122,52 +89,20 @@ const Header = () => {
 
           {/* Icon Group */}
           <div className="flex items-center space-x-5">
-            {/* Wishlist Icon with Count */}
-            <div
-              className="relative cursor-pointer"
-              onClick={() => {
-                if (!isAuthenticated) {
-                  alert("Please sign in first to view wishlist.");
-                } else {
-                  navigate("/wishlist");
-                }
-              }}
-            >
+            {/* Wishlist Icon */}
+            <div className="relative cursor-pointer">
               <AiOutlineHeart size={28} className="text-white" />
-              {wishlistCount > 0 && (
-                <span className="absolute top-0 right-0 bg-vibrantPink text-white text-xs font-bold px-1 rounded-full">
-                  {wishlistCount}
-                </span>
-              )}
             </div>
 
-            {/* Cart Icon with Count */}
-            <div
-              className="relative cursor-pointer"
-              onClick={() => {
-                if (!isAuthenticated) {
-                  alert("Please sign in first to view cart.");
-                } else {
-                  navigate("/cart");
-                }
-              }}
-            >
+            {/* Cart Icon */}
+            <div className="relative cursor-pointer">
               <AiOutlineShoppingCart size={28} className="text-white" />
-              {cartCount > 0 && (
-                <span className="absolute top-0 right-0 bg-vibrantPink text-white text-xs font-bold px-1 rounded-full">
-                  {cartCount}
-                </span>
-              )}
             </div>
 
             {/* Profile Icon */}
-            {isAuthenticated ? (
+            <Link to="/login">
               <CgProfile size={28} className="cursor-pointer text-white" />
-            ) : (
-              <Link to="/login">
-                <CgProfile size={28} className="cursor-pointer text-white" />
-              </Link>
-            )}
+            </Link>
           </div>
         </div>
       </div>

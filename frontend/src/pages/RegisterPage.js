@@ -1,24 +1,8 @@
 import React, { useState } from "react";
-import { registerUser } from "../api/userApi";
 import { Link } from "react-router-dom";
 
 const Register = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
   const [message, setMessage] = useState("");
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await registerUser(formData);
-      setMessage("Registration successful!");
-    } catch (error) {
-      setMessage(error.response?.data?.message || "Registration failed.");
-    }
-  };
 
   return (
     <div className=" bg-gray-100 flex flex-col">
@@ -43,32 +27,20 @@ const Register = () => {
       {/* Register Form */}
       <div className=" mb-10 flex flex-1 items-center justify-center">
         <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form className="space-y-4">
             <input
               type="text"
               placeholder="Name"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
             />
             <input
               type="email"
               placeholder="Email"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
             />
             <input
               type="password"
               placeholder="Password"
-              value={formData.password}
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
             />
             <button
