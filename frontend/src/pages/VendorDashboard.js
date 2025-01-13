@@ -1,65 +1,68 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import AddProduct from "../components/AddProduct"; 
-import axios from "axios";
+import AddProduct from "../components/AddProduct";
+import { getVendorDashboard, getVendorProducts } from "../api/Vendors";
 
 const VendorDashboard = () => {
   const [vendorData, setVendorData] = useState(null);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddProduct, setShowAddProduct] = useState(false);
-
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem("vendorToken");
-        if (!token) {
-          console.error("No token found in localStorage");
-          return;
-        }
-
-        // Fetch vendor's data
-        const vendorResponse = await axios.get(
-          "http://localhost:5000/api/vendors/dashboard",
-          {
-            headers: { Authorization: `Bearer ${token}` },
+          setLoading(true);
+          const token = localStorage.getItem("vendorToken");
+  
+          if (!token) {
+              console.error("No token found in localStorage");
+              navigate("/vendor-login");
+              return;
           }
-        );
-        setVendorData(vendorResponse.data);
 
-        // Fetch vendor's products
-        const productsResponse = await axios.get(
-          "http://localhost:5000/api/products/vendor", 
-          {
-            headers: { Authorization: `Bearer ${token}` },
+          const dashboardData = await getVendorDashboard(token);
+          setVendorData(dashboardData);
+
+          const productData = await getVendorProducts(token);
+  
+          // Check if there is product data, and if so, set it
+          if (productData && Array.isArray(productData)) {
+            setProducts(productData);
+          } else {
+            console.error("Product data is not an array or is empty");
           }
-        );
-        setProducts(productsResponse.data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+          console.error("Error fetching dashboard data:", error);
+          if (error.response && (error.response.status === 401 || error.response.status === 404)) {
+              navigate("/vendor-login");
+          }
       } finally {
-        setLoading(false);
+          setLoading(false);
       }
     };
-
+  
     fetchData();
-  }, []);
-
-  const handleProductAdded = (newProduct) => {
-    setProducts([...products, newProduct]);
-    setShowAddProduct(false); 
-  };
+  }, [navigate]);  // Add `navigate` to dependencies array  
 
   const handleLogout = () => {
     localStorage.removeItem("vendorToken");
     navigate("/vendor-login");
   };
 
+  const handleProductAdded = (newProduct) => {
+    setProducts([...products, newProduct]);
+    setShowAddProduct(false);
+  };
+
   const handleCloseModal = () => {
     setShowAddProduct(false);
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="flex flex-col bg-gray-50 min-h-screen relative">
@@ -68,7 +71,9 @@ const VendorDashboard = () => {
         <Link to="/">
           <img src="/assets/icons/EcomIcon.svg" alt="Logo" className="h-20" />
         </Link>
-        <div className="text-4xl text-black font-bold cursor-pointer">Vendor Panel</div>
+        <div className="text-4xl text-black font-bold cursor-pointer">
+          Vendor Panel
+        </div>
         <button
           onClick={handleLogout}
           className="bg-red-700 text-white px-6 py-2 rounded-lg hover:bg-red-900 transition duration-200"
@@ -77,17 +82,20 @@ const VendorDashboard = () => {
         </button>
       </div>
 
-      {/* Add Product Modal */}
+      {/* AddProduct Modal */}
       {showAddProduct && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-          onClick={handleCloseModal} 
+          onClick={handleCloseModal}
         >
           <div
             className="bg-white p-8 rounded-xl shadow-lg w-full max-w-lg transform transition-all duration-300 scale-95 hover:scale-100"
-            onClick={(e) => e.stopPropagation()} 
+            onClick={(e) => e.stopPropagation()}
           >
-            <AddProduct onClose={handleCloseModal} onProductAdded={handleProductAdded} />
+            <AddProduct
+              onClose={handleCloseModal}
+              onProductAdded={handleProductAdded}
+            />
           </div>
         </div>
       )}
@@ -104,7 +112,8 @@ const VendorDashboard = () => {
             {vendorData?.shopName || "Your Shop Name"}
           </h2>
           <p className="text-lg text-black mb-6">
-            Manage your products, view orders, and track your revenue, all in one dashboard. Boost your business now!
+            Manage your products, view orders, and track your revenue, all in
+            one dashboard. Boost your business now!
           </p>
           <div className="flex justify-center md:justify-start">
             <button className="px-8 py-3 bg-[#008080] text-white font-semibold rounded-full shadow-md hover:bg-black transition-all duration-300">
@@ -116,13 +125,14 @@ const VendorDashboard = () => {
 
       {/* Dashboard Main Content */}
       <main className="flex-grow px-8 mt-2">
+        {/* Info Cards */}
         <div className="bg-[#ffffff] text-white rounded-lg grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-          {[ 
+          {[
             {
               title: "Products",
-              count: products.length, 
+              count: products.length,
               action: "Add New Product",
-              onClick: () => setShowAddProduct(true), 
+              onClick: () => setShowAddProduct(true),
             },
             { title: "Orders", count: 20, action: "View Orders" },
             { title: "Revenue", count: "$5000", action: "View Details" },
@@ -131,7 +141,9 @@ const VendorDashboard = () => {
               key={index}
               className="bg-[#99cdd8] p-6 rounded-lg shadow-md text-center hover:shadow-xl transition-shadow"
             >
-              <h3 className="text-2xl font-semibold text-white">{item.title}</h3>
+              <h3 className="text-2xl font-semibold text-white">
+                {item.title}
+              </h3>
               <p className="text-lg text-white mt-2">{item.count}</p>
               <button
                 className="mt-4 px-6 py-2 bg-[#ffffff] text-black rounded-lg shadow-md hover:bg-black hover:text-white transition-all duration-300"
@@ -143,9 +155,11 @@ const VendorDashboard = () => {
           ))}
         </div>
 
-        {/* Products Section */}
+        {/* Products Table */}
         <div className="mt-6">
-          <h2 className="text-3xl font-bold text-gray-800 mb-6">Your Products</h2>
+          <h2 className="text-3xl font-bold text-gray-800 mb-6">
+            Your Products
+          </h2>
           <div className="overflow-x-auto">
             <table className="min-w-full bg-white rounded-lg shadow-md">
               <thead>

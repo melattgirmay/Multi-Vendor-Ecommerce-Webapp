@@ -4,7 +4,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const path = require("path");
 const connectDB = require("./config/db");
-const VendorRoutes = require("./routes/vendor");
+const vendorRoutes = require('./routes/vendors'); 
 const productRoutes = require('./routes/products');
 
 dotenv.config(); // Load environment variables
@@ -21,7 +21,7 @@ app.use(cors({ origin: "http://localhost:3000" }));
 app.use(express.json());
 
 // Use Vendor routes
-app.use("/api/vendors", VendorRoutes);
+app.use('/api/vendors', vendorRoutes);
 
 // Use Product routes
 app.use("/api/products", productRoutes);

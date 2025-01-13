@@ -1,31 +1,16 @@
-import React from "react";
+import React from 'react';
 
-const Pagination = ({ itemsPerPage, totalItems, currentPage, paginate }) => {
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(totalItems / itemsPerPage); i++) {
-    pageNumbers.push(i);
-  }
-
+const ProductCard = ({ product }) => {
   return (
-    <nav className="mt-6 flex justify-center">
-      <ul className="flex gap-2">
-        {pageNumbers.map((number) => (
-          <li key={number}>
-            <button
-              onClick={() => paginate(number)}
-              className={`px-4 py-2 rounded-md ${
-                number === currentPage
-                  ? "bg-teal-600 text-white"
-                  : "bg-gray-200"
-              }`}
-            >
-              {number}
-            </button>
-          </li>
-        ))}
-      </ul>
-    </nav>
+    <div className="flex flex-col items-center justify-between bg-white rounded-xl shadow-xl overflow-hidden">
+      <img src={product.imageUrl} alt={product.name} className="w-44 h-36 p-1 object-cover" />
+      <div className="p-4">
+        <h3 className="text-xl font-semibold text-black">{product.name}</h3>
+        <p className="text-gray-600 font-medium">{product.description}</p>
+        <span className="text-gray-500 text-md">Price: {product.price} Birr</span>
+      </div>
+    </div>
   );
 };
 
-export default Pagination;
+export default ProductCard;

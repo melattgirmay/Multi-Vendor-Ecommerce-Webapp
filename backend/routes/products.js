@@ -5,9 +5,6 @@ const path = require('path');
 const Vendor = require('../models/Vendor'); // Add this line to import the Vendor model
 const Product = require('../models/Product'); // Import the Product model
 
-
-console.log(Product);
-
 const router = express.Router();
 
 // Set up multer storage (store files in the 'uploads' folder)
@@ -24,13 +21,9 @@ const upload = multer({ storage: storage });
 
 // Add product route with image upload handling
 router.post('/add', upload.single('image'), async (req, res) => {
-  console.log('Headers:', req.headers); // Log request headers
-  console.log('File:', req.file); // Log file
-  console.log('Body:', req.body); // Log form fields
 
   const { name, description, category, price, stockQuantity } = req.body;
   const token = req.headers.authorization?.split(' ')[1];
-  console.log('Authorization Token:', req.headers.authorization);
   const imageUrl = req.file ? `http://localhost:5000/uploads/${req.file.filename}` : null;
 
   if (!name || !description || !category || !price || !stockQuantity || !req.file) {
@@ -39,7 +32,6 @@ router.post('/add', upload.single('image'), async (req, res) => {
 
   try {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    console.log('Decoded Token:', decodedToken);
 
     // Correctly access the vendorId from the decoded token
     const vendorId = decodedToken.vendorId;
@@ -49,7 +41,6 @@ router.post('/add', upload.single('image'), async (req, res) => {
       console.error('Vendor not found with ID:', vendorId);
       return res.status(404).json({ message: 'Vendor not found.' });
     }
-    console.log('Vendor exists:', vendorExists);
 
     const newProduct = new Product({
       name,
@@ -58,7 +49,7 @@ router.post('/add', upload.single('image'), async (req, res) => {
       price,
       stockQuantity,
       imageUrl,
-      vendor: vendorId,
+      vendor: mongoose.Types.ObjectId(req.vendorId),
     });
 
     // Ensure that this part is inside the try block, to handle errors properly
@@ -70,15 +61,14 @@ router.post('/add', upload.single('image'), async (req, res) => {
   }
 });
 
-
 // Get all products
 router.get('/', async (req, res) => {
-    try {
-        const products = await Product.find();
-        res.status(200).json(products);
-    } catch (error) {
-        res.status(500).json({ message: 'Failed to fetch products', error });
-    }
+  try {
+      const products = await Product.find();
+      res.status(200).json(products);
+  } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch products', error });
+  }
 });
 
 // Get a product by ID

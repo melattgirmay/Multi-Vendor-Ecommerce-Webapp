@@ -1,84 +1,81 @@
-import React, { useEffect, useState } from "react";
-import { getProducts } from "../api/products"; // Import the getProducts API function
-import ProductCard from "../components/ProductCard"; // Reusable ProductCard component
-import FilterBar from "../components/FilterBar"; // Filtering options
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import ProductCard from "../components/ProductCard";
+import FilterBar from "../components/FilterBar";
 import Pagination from "../components/Pagination";
-import Headers from "../components/Header/Header" // Pagination controls
+import Headers from "../components/Header/Header";
 
 const ProductListPage = () => {
-  const [products, setProducts] = useState([]); // State to store products
-  const [filteredProducts, setFilteredProducts] = useState([]); // Filtered products
-  const [error, setError] = useState(null); // Error handling
-  const [currentPage, setCurrentPage] = useState(1); // Pagination state
-  const [productsPerPage] = useState(10); // Number of products per page
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [productsPerPage] = useState(10);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch products from the backend
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const data = await getProducts(); // API call to fetch all products
-        setProducts(data);
-        setFilteredProducts(data); // Initialize filtered products
-      } catch (err) {
-        setError("Failed to fetch products. Please try again later.");
+        const response = await axios.get('http://localhost:5000/api/products');
+        setProducts(response.data);
+        setFilteredProducts(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        setLoading(false);
       }
     };
+
     fetchProducts();
   }, []);
 
-  // Handle filtering (e.g., by category, price)
-  const handleFilter = (filterOptions) => {
+  const handleFilterChange = (filters) => {
     let updatedProducts = [...products];
 
-    if (filterOptions.category) {
-      updatedProducts = updatedProducts.filter(
-        (product) => product.category === filterOptions.category
-      );
+    if (filters.category) {
+      updatedProducts = updatedProducts.filter((product) => product.category === filters.category);
     }
 
-    if (filterOptions.priceRange) {
-      updatedProducts = updatedProducts.filter(
-        (product) =>
-          product.price >= filterOptions.priceRange.min &&
-          product.price <= filterOptions.priceRange.max
-      );
+    if (filters.minPrice !== null) {
+      updatedProducts = updatedProducts.filter((product) => product.price >= filters.minPrice);
+    }
+
+    if (filters.maxPrice !== null) {
+      updatedProducts = updatedProducts.filter((product) => product.price <= filters.maxPrice);
     }
 
     setFilteredProducts(updatedProducts);
-    setCurrentPage(1); // Reset to the first page after filtering
   };
 
-  // Pagination logic
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = filteredProducts.slice(
-    indexOfFirstProduct,
-    indexOfLastProduct
-  );
+  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
-    <div className>
+    <div className="flex flex-col min-h-screen">
       <Headers />
-      <FilterBar onFilter={handleFilter} /> {/* Filter options */}
-      {error ? (
-        <p className="text-red-500">{error}</p>
-      ) : (
-        <div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {currentProducts.map((product) => (
-              <ProductCard key={product._id} product={product} /> // Render each product
-            ))}
-          </div>
-          <Pagination
-            itemsPerPage={productsPerPage}
-            totalItems={filteredProducts.length}
-            currentPage={currentPage}
-            paginate={paginate}
-          />
+      
+      <section className="bg-gray-50">
+        <FilterBar onFilterChange={handleFilterChange} />
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 justify-center p-5">
+          {loading ? (
+            <p>Loading products...</p>
+          ) : (
+            currentProducts.map((product) => (
+              <ProductCard key={product._id} product={product} />
+            ))
+          )}
         </div>
-      )}
+      </section>
+
+      <Pagination
+        itemsPerPage={productsPerPage}
+        totalItems={filteredProducts.length}
+        paginate={paginate}
+        currentPage={currentPage}
+      />
     </div>
   );
 };

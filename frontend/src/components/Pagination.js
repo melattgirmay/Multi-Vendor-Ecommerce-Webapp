@@ -1,26 +1,27 @@
-import React from "react";
+import React from 'react';
 
-const Pagination = ({ itemsPerPage, totalItems, currentPage, paginate }) => {
+const Pagination = ({ itemsPerPage, totalItems, paginate, currentPage }) => {
   const pageNumbers = [];
+
   for (let i = 1; i <= Math.ceil(totalItems / itemsPerPage); i++) {
     pageNumbers.push(i);
   }
 
   return (
-    <nav className="mt-6 flex justify-center">
-      <ul className="flex gap-2">
+    <nav className="flex justify-center mt-6">
+      <ul className="pagination flex gap-2">
         {pageNumbers.map((number) => (
-          <li key={number}>
-            <button
+          <li
+            key={number}
+            className={`page-item ${currentPage === number ? 'bg-[#008080] text-white' : 'bg-white text-teal-500'} rounded-full`}
+          >
+            <a
+              href="#!"
               onClick={() => paginate(number)}
-              className={`px-4 py-2 rounded-md ${
-                number === currentPage
-                  ? "bg-teal-600 text-white"
-                  : "bg-gray-200"
-              }`}
+              className="page-link px-4 py-2 block text-center rounded-full hover:bg-teal-200"
             >
               {number}
-            </button>
+            </a>
           </li>
         ))}
       </ul>

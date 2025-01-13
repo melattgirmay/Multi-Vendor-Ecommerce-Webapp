@@ -37,7 +37,6 @@ const BecomeVendorPage = () => {
 
     try {
       const response = await registerVendor(formData);
-      console.log("Vendor registered:", response.vendor);
       alert(response.message); // Show success message
       navigate("/vendor-login"); // Redirect to login page
     } catch (err) {
