@@ -2,6 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
+const mongoose = require('mongoose');
 const Vendor = require('../models/Vendor'); // Add this line to import the Vendor model
 const Product = require('../models/Product'); // Import the Product model
 
@@ -49,7 +50,7 @@ router.post('/add', upload.single('image'), async (req, res) => {
       price,
       stockQuantity,
       imageUrl,
-      vendor: mongoose.Types.ObjectId(req.vendorId),
+      vendor: new mongoose.Types.ObjectId(vendorId),
     });
 
     // Ensure that this part is inside the try block, to handle errors properly

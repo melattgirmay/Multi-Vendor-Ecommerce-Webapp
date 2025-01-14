@@ -1,17 +1,5 @@
 import axios from 'axios';
 
-// Add a product
-export const addProduct = async (productData) => {
-    try {
-        const response = await axios.post('http://localhost:5000/api/products/add', productData, {
-            headers: { 'Content-Type': 'application/json' },
-        });
-        return response.data;
-    } catch (error) {
-        throw error.response?.data || error;
-    }
-};
-
 // Get all products
 export const getProducts = async () => {
     try {
