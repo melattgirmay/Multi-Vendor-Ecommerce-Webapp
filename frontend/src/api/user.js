@@ -63,32 +63,28 @@ export const addToWishlist = async (productId, userId) => {
   }
 };
 
-// Get Cart
+// Fetch Cart Items
 export const getCartItems = async () => {
   try {
     const response = await axios.get(`${API_URL}/cart`, {
-      headers: {
-        Authorization: `Bearer ${getAuthToken()}`, // Include token in Authorization header
-      },
+      headers: { Authorization: `Bearer ${getAuthToken()}` },
     });
-    return response.data; // Assuming it returns the cart items
+    return response.data; // Assumes the API returns cart items with populated product data
   } catch (error) {
-    console.error("Get Cart error:", error.response?.data || error.message);
-    throw error.response || { message: "Failed to get cart" };
+    console.error("Error fetching cart items:", error.message);
+    throw error;
   }
 };
 
-// Get Wishlist
+// Fetch Wishlist Items
 export const getWishlistItems = async () => {
   try {
     const response = await axios.get(`${API_URL}/wishlist`, {
-      headers: {
-        Authorization: `Bearer ${getAuthToken()}`, // Include token in Authorization header
-      },
+      headers: { Authorization: `Bearer ${getAuthToken()}` },
     });
-    return response.data; // Assuming it returns the wishlist items
+    return response.data; // Assumes the API returns wishlist items with populated product data
   } catch (error) {
-    console.error("Get Wishlist error:", error.response?.data || error.message);
-    throw error.response || { message: "Failed to get wishlist" };
+    console.error("Error fetching wishlist items:", error.message);
+    throw error;
   }
 };

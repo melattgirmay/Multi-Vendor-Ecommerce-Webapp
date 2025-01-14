@@ -55,8 +55,8 @@ const loginUser = async (req, res) => {
 };
 
 const addToCart = async (req, res) => {
-
   const { productId, quantity } = req.body;
+
   if (!productId || !quantity) {
     return res.status(400).json({ message: "Product ID and quantity are required" });
   }
@@ -121,11 +121,16 @@ const addToWishlist = async (req, res) => {
 const getCart = async (req, res) => {
   try {
     const userId = req.user.id; // Fetch the user ID from the token
-    console.log("Fetching cart for user ID:", userId); // Debugging line
 
+    // Fetch the user and populate the cart's productId with product details
     const user = await User.findById(userId).populate("cart.productId");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
+    }
+
+    // If cart is empty, return a message
+    if (user.cart.length === 0) {
+      return res.status(200).json({ message: "Your cart is empty" });
     }
 
     res.status(200).json(user.cart);
@@ -135,14 +140,33 @@ const getCart = async (req, res) => {
   }
 };
 
-// Get Wishlist
 const getWishlist = async (req, res) => {
   try {
-    const wishlistItems = await Wishlist.find({ userId: req.user._id }); // Fetch wishlist items by user ID
-    res.json(wishlistItems);
+    const userId = req.user.id; // Get the user ID from the token
+
+    // Populate the product details for each item in the wishlist
+    const user = await User.findById(userId).populate({
+      path: "wishlist", // We are populating the wishlist
+      model: "Product", // Ensure this is pointing to the Product model
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Log the populated wishlist for debugging purposes
+    console.log("User Wishlist:", user.wishlist); // This should contain product details
+
+    // If wishlist is empty, return a message
+    if (user.wishlist.length === 0) {
+      return res.status(200).json({ message: "Your wishlist is empty" });
+    }
+
+    // Send the populated wishlist back to the frontend
+    res.status(200).json(user.wishlist); // This will contain full product details
   } catch (error) {
     console.error("Error fetching wishlist:", error);
-    res.status(500).json({ message: "Failed to fetch wishlist" });
+    res.status(500).json({ message: "Failed to fetch wishlist", error: error.message });
   }
 };
 
