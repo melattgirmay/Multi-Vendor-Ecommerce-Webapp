@@ -55,7 +55,6 @@ const loginUser = async (req, res) => {
 };
 
 const addToCart = async (req, res) => {
-  console.log("Request Body:", req.body);  // Log the request body for debugging
 
   const { productId, quantity } = req.body;
   if (!productId || !quantity) {
@@ -118,4 +117,33 @@ const addToWishlist = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, addToCart, addToWishlist };
+// Get Cart
+const getCart = async (req, res) => {
+  try {
+    const userId = req.user.id; // Fetch the user ID from the token
+    console.log("Fetching cart for user ID:", userId); // Debugging line
+
+    const user = await User.findById(userId).populate("cart.productId");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(user.cart);
+  } catch (error) {
+    console.error("Error fetching cart:", error);
+    res.status(500).json({ message: "Failed to fetch cart", error: error.message });
+  }
+};
+
+// Get Wishlist
+const getWishlist = async (req, res) => {
+  try {
+    const wishlistItems = await Wishlist.find({ userId: req.user._id }); // Fetch wishlist items by user ID
+    res.json(wishlistItems);
+  } catch (error) {
+    console.error("Error fetching wishlist:", error);
+    res.status(500).json({ message: "Failed to fetch wishlist" });
+  }
+};
+
+module.exports = { registerUser, loginUser, addToCart, addToWishlist, getCart, getWishlist };

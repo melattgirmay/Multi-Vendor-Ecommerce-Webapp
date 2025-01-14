@@ -62,3 +62,33 @@ export const addToWishlist = async (productId, userId) => {
     throw error.response || { message: "Failed to add to wishlist" };
   }
 };
+
+// Get Cart
+export const getCartItems = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/cart`, {
+      headers: {
+        Authorization: `Bearer ${getAuthToken()}`, // Include token in Authorization header
+      },
+    });
+    return response.data; // Assuming it returns the cart items
+  } catch (error) {
+    console.error("Get Cart error:", error.response?.data || error.message);
+    throw error.response || { message: "Failed to get cart" };
+  }
+};
+
+// Get Wishlist
+export const getWishlistItems = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/wishlist`, {
+      headers: {
+        Authorization: `Bearer ${getAuthToken()}`, // Include token in Authorization header
+      },
+    });
+    return response.data; // Assuming it returns the wishlist items
+  } catch (error) {
+    console.error("Get Wishlist error:", error.response?.data || error.message);
+    throw error.response || { message: "Failed to get wishlist" };
+  }
+};
