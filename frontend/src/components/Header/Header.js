@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineHeart, AiOutlineSearch, AiOutlineShoppingCart } from "react-icons/ai";
 import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
@@ -6,59 +6,43 @@ import { BiMenuAltLeft } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
 import DropDown from "./DropDown";
 import Navbar from "./Navbar";
-import { getCart, getWishlist } from "../../api/userApi"; // Adjust the import path if necessary
+import Sidebar from "../Sidebar"; // Import Sidebar
 
 const Header = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [dropDown, setDropDown] = useState(false);
   const [active, setActive] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
-  const [wishlistCount, setWishlistCount] = useState(0);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("token") ? true : false);
+  const [cartItemsCount, setCartItemsCount] = useState(0); // State for cart count
+  const [wishlistItemsCount, setWishlistItemsCount] = useState(0); // State for wishlist count
+  const [showCart, setShowCart] = useState(false); // State to show cart sidebar
+  const [showWishlist, setShowWishlist] = useState(false); // State to show wishlist sidebar
   const navigate = useNavigate();
-
-  const dropdownRef = useRef(null); // Reference to dropdown
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsAuthenticated(true);
-      const fetchCartAndWishlist = async () => {
-        try {
-          const cart = await getCart(token);
-          const wishlist = await getWishlist(token);
-          setCartCount(cart?.length || 0);
-          setWishlistCount(wishlist?.length || 0);
-        } catch (error) {
-          console.error("Failed to fetch cart or wishlist", error);
-        }
-      };
-      fetchCartAndWishlist();
-    }
-  }, []);
+  const dropdownRef = useRef(null);
 
   const handleSignOut = () => {
     localStorage.removeItem("token");
-    setIsAuthenticated(false);
-    navigate("/");
+    setIsAuthenticated(false); // Just set the authentication state and don't navigate anywhere
   };
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
 
+  const handleSignInPrompt = (type) => {
+    alert(`Please sign in first to view your ${type}.`);
+  };
+
   // Close dropdown if clicked outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropDown(false); // Close dropdown if clicked outside
+        setDropDown(false);
       }
     };
 
-    // Add event listener to document
     document.addEventListener("click", handleClickOutside);
 
-    // Clean up event listener on component unmount
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
@@ -71,6 +55,9 @@ const Header = () => {
       setActive(false);
     }
   });
+
+  const toggleCartSidebar = () => setShowCart(!showCart);
+  const toggleWishlistSidebar = () => setShowWishlist(!showWishlist);
 
   return (
     <div>
@@ -89,15 +76,17 @@ const Header = () => {
           />
           <AiOutlineSearch size={24} className="absolute right-3 top-3 cursor-pointer" />
         </div>
-        <Link to="/become-Vendor" className="bg-black text-white px-4 py-2 rounded-lg">
+        <div className="bg-black text-white px-4 py-2 rounded-lg">
           {isAuthenticated ? (
-            <span onClick={handleSignOut}>Logout</span>
+            <span onClick={handleSignOut}>Logout</span> // Logout button now only signs out, no navigation
           ) : (
-            <span>
-              Become Vendor <IoIosArrowForward className="inline-block ml-1" />
-            </span>
+            <Link to="/become-Vendor">
+              <span>
+                Become Vendor <IoIosArrowForward className="inline-block ml-1" />
+              </span>
+            </Link>
           )}
-        </Link>
+        </div>
       </div>
 
       {/* Sticky Header */}
@@ -127,16 +116,16 @@ const Header = () => {
               className="relative cursor-pointer"
               onClick={() => {
                 if (!isAuthenticated) {
-                  alert("Please sign in first to view wishlist.");
+                  handleSignInPrompt("wishlist");
                 } else {
-                  navigate("/wishlist");
+                  toggleWishlistSidebar(); // Open wishlist sidebar
                 }
               }}
             >
               <AiOutlineHeart size={28} className="text-white" />
-              {wishlistCount > 0 && (
-                <span className="absolute top-0 right-0 bg-vibrantPink text-white text-xs font-bold px-1 rounded-full">
-                  {wishlistCount}
+              {isAuthenticated && wishlistItemsCount > 0 && (
+                <span className="absolute top-0 right-0 text-xs text-white bg-red-600 rounded-full px-2">
+                  {wishlistItemsCount}
                 </span>
               )}
             </div>
@@ -146,23 +135,23 @@ const Header = () => {
               className="relative cursor-pointer"
               onClick={() => {
                 if (!isAuthenticated) {
-                  alert("Please sign in first to view cart.");
+                  handleSignInPrompt("cart");
                 } else {
-                  navigate("/cart");
+                  toggleCartSidebar(); // Open cart sidebar
                 }
               }}
             >
               <AiOutlineShoppingCart size={28} className="text-white" />
-              {cartCount > 0 && (
-                <span className="absolute top-0 right-0 bg-vibrantPink text-white text-xs font-bold px-1 rounded-full">
-                  {cartCount}
+              {isAuthenticated && cartItemsCount > 0 && (
+                <span className="absolute top-0 right-0 text-xs text-white bg-green-600 rounded-full px-2">
+                  {cartItemsCount}
                 </span>
               )}
             </div>
 
             {/* Profile Icon */}
             {isAuthenticated ? (
-              <CgProfile size={28} className="cursor-pointer text-white" />
+              <CgProfile size={28} className="cursor-pointer text-white" /> // Just an icon, no link after login
             ) : (
               <Link to="/login">
                 <CgProfile size={28} className="cursor-pointer text-white" />
@@ -171,6 +160,10 @@ const Header = () => {
           </div>
         </div>
       </div>
+
+      {/* Render Sidebars */}
+      {showCart && <Sidebar type="cart" items={[]} closeSidebar={toggleCartSidebar} />}
+      {showWishlist && <Sidebar type="wishlist" items={[]} closeSidebar={toggleWishlistSidebar} />}
     </div>
   );
 };

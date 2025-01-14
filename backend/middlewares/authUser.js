@@ -1,3 +1,4 @@
+//C:\Users\hp\Desktop\Multi-Vendor-Ecommerce-Webapp\backend\middlewares\authUser.js
 const jwt = require("jsonwebtoken");
 
 const authUserMiddleware = (req, res, next) => {

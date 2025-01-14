@@ -90,10 +90,7 @@ const getVendorProducts = async (req, res) => {
     }
 
     try {
-        console.log('Fetching products for vendorId:', vendorId);
         const products = await Product.find({ vendor: new mongoose.Types.ObjectId(vendorId) });
-        console.log('Products found:', products);
-
         
         if (products.length === 0) {
             return res.status(200).json({

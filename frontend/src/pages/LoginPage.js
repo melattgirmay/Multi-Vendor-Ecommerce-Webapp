@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { loginUser } from "../api/userApi";
+import { loginUser } from "../api/user";
 import { Link, useNavigate } from "react-router-dom"; // Import Link for navigation
 
 const Login = () => {
@@ -11,16 +11,21 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await loginUser(credentials);
+      
+      // Store token and userId in localStorage
       localStorage.setItem("token", response.token);
+      localStorage.setItem("userId", response.user.id);  // Store userId here
+  
       setMessage("Login successful!");
       navigate("/"); // Redirect to HomePage
     } catch (error) {
-      setMessage(error.data?.message || "Login failed due to a server error.");
+      setMessage(error.response?.data?.message || "Login failed due to a server error.");
     }
   };
+  
 
   return (
-    <div className=" bg-gray-100 flex flex-col">
+    <div className="bg-gray-100 min-h-screen flex flex-col">
       {/* Header */}
       <div className="bg-white mb-10 shadow-md py-5 px-8 flex items-center justify-between">
         <Link to="/" className="flex items-center">
@@ -40,7 +45,7 @@ const Login = () => {
       </div>
 
       {/* Login Form */}
-      <div className="flex flex-1 mb-10 items-center justify-center">
+      <div className="flex flex-1 items-center justify-center">
         <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
           <form onSubmit={handleSubmit} className="space-y-4">
             <input
